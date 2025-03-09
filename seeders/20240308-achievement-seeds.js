@@ -13,6 +13,7 @@ module.exports = {
           "Поздравляем! Вы сделали первый шаг к финансовому учёту, записав свою первую трату. Теперь контроль над бюджетом в ваших руках!",
         icon: "🏆",
         imagePath: "assets/achievements/first_note.png",
+        translationKey: "financial.first_note",
         requirements: {
           type: "EXPENSE_COUNT",
           count: 1,
@@ -27,6 +28,7 @@ module.exports = {
           "Вы неделю фиксируете свои расходы! Это начало осознанного управления деньгами. Главное — не останавливаться!",
         icon: "🏆",
         imagePath: "assets/achievements/finance_way_started.png",
+        translationKey: "financial.finance_way_started",
         requirements: {
           type: "EXPENSE_STREAK",
           days: 7,
@@ -41,6 +43,7 @@ module.exports = {
           "Вы записывали расходы каждый день на протяжении месяца! Отличная привычка, которая поможет вам анализировать и управлять финансами.",
         icon: "🏆",
         imagePath: "assets/achievements/month_without_miss.png",
+        translationKey: "financial.responsible",
         requirements: {
           type: "EXPENSE_STREAK",
           days: 30,
@@ -155,6 +158,7 @@ module.exports = {
           "Вы закрыли свою первую задачу! Это начало вашей продуктивной работы.",
         icon: "⏳",
         imagePath: "assets/achievements/first_task.png",
+        translationKey: "time.first_task",
         requirements: {
           type: "TASK_COMPLETED",
           count: 1,

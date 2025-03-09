@@ -671,17 +671,51 @@ class AchievementService {
         },
       });
 
-      // Create achievements for the user
-      const userAchievements = achievementTemplates.map((template) => ({
-        title: template.title,
-        description: template.description,
-        icon: template.icon,
-        imagePath: template.imagePath,
-        requirements: template.requirements,
-        userId,
-        progress: 0,
-        completed: false,
-      }));
+      // Create achievements for the user with translation keys
+      const userAchievements = achievementTemplates.map((template) => {
+        let translationKey = null;
+
+        // Determine translation key based on requirements type
+        switch (template.requirements.type) {
+          case "EXPENSE_COUNT":
+            if (template.requirements.count === 1) {
+              translationKey = "financial.first_note";
+            }
+            break;
+          case "EXPENSE_STREAK":
+            if (template.requirements.days === 7) {
+              translationKey = "financial.finance_way_started";
+            } else if (template.requirements.days === 30) {
+              translationKey = "financial.responsible";
+            }
+            break;
+          case "TASK_COMPLETED":
+            if (template.requirements.count === 1) {
+              translationKey = "time.first_task";
+            }
+            break;
+          case "TASK_STREAK":
+            if (template.requirements.days === 30) {
+              translationKey = "time.month_without_miss";
+            }
+            break;
+          case "DEADLINE_MET":
+            translationKey = "time.deadline_met";
+            break;
+        }
+
+        return {
+          title: template.title,
+          description: template.description,
+          icon: template.icon,
+          imagePath: template.imagePath,
+          requirements: template.requirements,
+          translationKey,
+          userId,
+          progress: 0,
+          completed: false,
+        };
+      });
 
       await Achievement.bulkCreate(userAchievements);
     } catch (error) {

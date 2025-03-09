@@ -5,6 +5,7 @@ const {
   getAchievementProgress,
   getAchievementsByCategory,
   initializeAchievements,
+  debugAchievements,
 } = require("../controllers/achievementController");
 const authMiddleware = require("../middleware/authMiddleware");
 
@@ -21,6 +22,9 @@ router.get("/category/:category", authMiddleware, getAchievementsByCategory);
 
 // Initialize achievements for a new user (useful for existing users or testing)
 router.post("/initialize", authMiddleware, initializeAchievements);
+
+// Add debug route
+router.get("/debug", authMiddleware, debugAchievements);
 
 // Get specific achievement by ID
 router.get("/:id", authMiddleware, getAchievementById);

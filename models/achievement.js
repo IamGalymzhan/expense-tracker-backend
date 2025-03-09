@@ -30,6 +30,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: true,
       },
+      translationKey: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
       requirements: {
         type: DataTypes.JSONB,
         allowNull: false,

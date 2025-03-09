@@ -67,3 +67,45 @@ exports.updatePassword = async (req, res) => {
     res.status(500).json({ message: "Қате шықты", error: error.message });
   }
 };
+
+// Update user language preference
+exports.updateLanguage = async (req, res) => {
+  try {
+    const { language } = req.body;
+
+    if (!language || (language !== "kk" && language !== "ru")) {
+      return res
+        .status(400)
+        .json({ message: "Invalid language. Use 'kk' or 'ru'." });
+    }
+
+    const user = await User.findByPk(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({ message: "Қолданушы табылмады" });
+    }
+
+    // Make sure preferences is initialized
+    if (!user.preferences) {
+      user.preferences = {};
+    }
+
+    // Update language preference
+    user.preferences = {
+      ...user.preferences,
+      language,
+    };
+
+    await user.save();
+
+    res.status(200).json({
+      message:
+        language === "kk"
+          ? "Тіл параметрі сәтті жаңартылды"
+          : "Настройки языка успешно обновлены",
+      preferences: user.preferences,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Қате шықты", error: error.message });
+  }
+};
