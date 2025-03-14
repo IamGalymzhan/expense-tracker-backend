@@ -1,6 +1,7 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { User } = require("../models");
+const AchievementService = require("../utils/achievementService");
 
 const register = async (req, res) => {
   try {
@@ -21,10 +22,15 @@ const register = async (req, res) => {
       },
     });
 
+    // Initialize achievements for the new user
+    await AchievementService.createUserAchievements(newUser.id);
+    console.log(`Achievements initialized for new user: ${newUser.id}`);
+
     res
       .status(201)
       .json({ message: "Пайдаланушы сәтті тіркелді", user: newUser });
   } catch (error) {
+    console.error("Registration error:", error);
     res.status(500).json({ message: "Сервер қатесі", error: error.message });
   }
 };

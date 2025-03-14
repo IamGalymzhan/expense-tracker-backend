@@ -242,6 +242,21 @@ exports.getAchievementsByCategory = async (req, res) => {
 // Initialize achievements for a new user
 exports.initializeAchievements = async (req, res) => {
   try {
+    // Note: Achievements are now automatically initialized when a user registers
+    // This endpoint remains for testing or manually initializing achievements for existing users
+
+    // Check if user already has achievements
+    const existingAchievements = await Achievement.count({
+      where: { userId: req.user.id },
+    });
+
+    if (existingAchievements > 0) {
+      return res.json({
+        message: "User already has achievements initialized",
+        count: existingAchievements,
+      });
+    }
+
     await AchievementService.createUserAchievements(req.user.id);
     res.json({ message: "Achievements initialized successfully" });
   } catch (error) {
