@@ -61,6 +61,30 @@ npm run dev
 npm start
 ```
 
+## API Documentation
+
+The API is documented using Swagger UI. You can access the interactive documentation at:
+
+```
+http://localhost:5000/api-docs
+```
+
+The Swagger UI provides:
+
+- A comprehensive list of all API endpoints
+- Request and response schemas
+- The ability to test endpoints directly from the browser
+- Authentication support via JWT tokens
+
+To use protected endpoints in Swagger UI:
+
+1. First authenticate using the `/api/auth/login` endpoint
+2. Copy the token from the response
+3. Click the "Authorize" button at the top of the page
+4. In the popup, enter your token in the format: `Bearer YOUR_TOKEN_HERE`
+5. Click "Authorize" and close the popup
+6. Now you can access protected endpoints
+
 ## API Endpoints
 
 ### Аутентификация

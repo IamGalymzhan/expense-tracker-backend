@@ -6,6 +6,33 @@ const rateLimit = require("express-rate-limit");
 const { sequelize } = require("./models");
 const jwt = require("jsonwebtoken");
 const path = require("path");
+const swaggerUi = require("swagger-ui-express");
+const swaggerSpecs = require("./config/swagger/swagger");
+
+/**
+ * @swagger
+ * tags:
+ *   - name: Authentication
+ *     description: User authentication and registration endpoints
+ *   - name: Expenses
+ *     description: Expense management endpoints
+ *   - name: Incomes
+ *     description: Income tracking endpoints
+ *   - name: Tasks
+ *     description: Task management endpoints
+ *   - name: Budgets
+ *     description: Budget planning and tracking endpoints
+ *   - name: Statistics
+ *     description: Financial statistics and reporting endpoints
+ *   - name: Export
+ *     description: Data export endpoints
+ *   - name: Settings
+ *     description: User settings and preferences endpoints
+ *   - name: Achievements
+ *     description: User achievements and rewards endpoints
+ *   - name: Health
+ *     description: API health and diagnostic endpoints
+ */
 
 const authRoutes = require("./routes/authRoutes");
 const expenseRoutes = require("./routes/expenseRoutes");
@@ -27,6 +54,9 @@ const {
 const {
   scheduleDailyReminders,
 } = require("./controllers/notificationController");
+const {
+  scheduleTaskNotifications,
+} = require("./utils/taskNotificationService");
 
 // Import achievement cron jobs
 require("./utils/achievementCron");
@@ -44,6 +74,13 @@ app.use(cors());
 app.use(helmet());
 app.use(express.json());
 app.use(limiter);
+
+// Swagger UI setup
+app.use(
+  "/api-docs",
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerSpecs, { explorer: true })
+);
 
 // Serve static files from assets directory
 app.use("/assets", express.static(path.join(__dirname, "assets")));
@@ -67,6 +104,27 @@ app.get("/api/statistics/monthly", authMiddleware, getDailyNetIncome);
 app.get("/api/statistics/overview", authMiddleware, getFinancialOverview);
 
 // Add a test endpoint to verify API is working
+/**
+ * @swagger
+ * /api/test:
+ *   get:
+ *     summary: Test endpoint to verify API is working
+ *     tags: [Health]
+ *     responses:
+ *       200:
+ *         description: API is operational
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: API is working correctly
+ *                 timestamp:
+ *                   type: string
+ *                   format: date-time
+ */
 app.get("/api/test", (req, res) => {
   res.status(200).json({
     message: "API is working correctly",
@@ -76,8 +134,38 @@ app.get("/api/test", (req, res) => {
 
 // Initialize notification scheduler
 scheduleDailyReminders();
+scheduleTaskNotifications();
 
 // Add a database test endpoint
+/**
+ * @swagger
+ * /api/db-test:
+ *   get:
+ *     summary: Test endpoint to verify database connection
+ *     tags: [Health]
+ *     responses:
+ *       200:
+ *         description: Database connection successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Database connection successful
+ *                 dialect:
+ *                   type: string
+ *                   example: postgres
+ *                 models:
+ *                   type: string
+ *                   example: User, Expense, Income
+ *                 timestamp:
+ *                   type: string
+ *                   format: date-time
+ *       500:
+ *         description: Database connection failed
+ */
 app.get("/api/db-test", async (req, res) => {
   try {
     await sequelize.authenticate();
@@ -98,9 +186,37 @@ app.get("/api/db-test", async (req, res) => {
 });
 
 // Add an auth test endpoint
+/**
+ * @swagger
+ * /api/auth-test:
+ *   get:
+ *     summary: Test endpoint to verify JWT authentication
+ *     tags: [Health]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Token is valid
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Token is valid
+ *                 tokenContent:
+ *                   type: object
+ *                 tokenWithoutVerify:
+ *                   type: object
+ *                 jwtSecretFirstChars:
+ *                   type: string
+ *       401:
+ *         description: Unauthorized - Invalid or expired token
+ *       500:
+ *         description: Server error
+ */
 app.get("/api/auth-test", (req, res) => {
-  const jwt = require("jsonwebtoken");
-
   const authHeader = req.header("Authorization");
   if (!authHeader) {
     return res.status(401).json({
